@@ -3,7 +3,6 @@
 from pynput.keyboard import Key, Controller as keyboard_controller
 from pynput import keyboard
 from pynput.mouse import Controller as mouse_controller, Button
-from multiprocessing.pool import ThreadPool
 import time
 
 class KeyMouse:
@@ -51,10 +50,10 @@ class KeyMouse:
         listener.start()
 
     def start_event_handling(self):
-        fast_mouse_speed = 35
+        fast_mouse_speed = 90
+        default_mouse_speed = 35
         slow_mouse_speed = 5
-   
-        current_mouse_speed = fast_mouse_speed
+        current_mouse_speed = default_mouse_speed
         
         while True:
             if self.keys_held.get("Key.alt") and self.keys_held.get(self.activation_key):
@@ -64,11 +63,13 @@ class KeyMouse:
                     self.mouse_manager.scroll(0, -1)
 
             elif self.keys_held.get(self.activation_key):
-                if self.keys_held.get("<65027>"): # Altgr
+                if self.keys_held.get("."): 
                     current_mouse_speed = slow_mouse_speed
-                else:
+                elif self.keys_held.get("-"):
                     current_mouse_speed = fast_mouse_speed
-
+                else:
+                    current_mouse_speed = default_mouse_speed
+                
                 if self.keys_held.get("a"):
                     self.mouse_manager.move(-current_mouse_speed, +0)
                 if self.keys_held.get("d"):
@@ -77,11 +78,17 @@ class KeyMouse:
                     self.mouse_manager.move(+0, -current_mouse_speed)
                 if self.keys_held.get("s"):
                     self.mouse_manager.move(+0, +current_mouse_speed)
-
+                
                 if self.keys_pressed.get("Key.space"):
                     self.mouse_manager.press(Button.left)
                 if self.keys_released.get("Key.space"):
                     self.mouse_manager.release(Button.left)
+                
+                if self.keys_pressed.get(","):
+                    self.mouse_manager.press(Button.right)
+                if self.keys_released.get(","):
+                    self.mouse_manager.release(Button.right)
+            
 
             self.keys_pressed = {}
             self.keys_released = {}
