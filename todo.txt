@@ -1,1 +1,5 @@
+- Toggle mouse mode
+- use vector math to calculate the distance the mouse needs to move
+
+Completed:
 - Enable right clicking [x]
