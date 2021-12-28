@@ -106,6 +106,10 @@ class KeyMouse:
                     self.mouse_manager.scroll(0, +scroll_counter)
                 if self.keys_held.get("s"):
                     self.mouse_manager.scroll(0, -scroll_counter)
+                if self.keys_held.get("a"): 
+                    self.mouse_manager.scroll(-scroll_counter, 0)
+                if self.keys_held.get("d"):
+                    self.mouse_manager.scroll(+scroll_counter, 0)
 
                 if scroll_counter > 1:
                     scroll_counter = 0
