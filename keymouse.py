@@ -11,22 +11,22 @@ class DeltaTimer:
         self._start = time.time()
         self._end = None
         self._delta = 0
-    
+
     def start(self) -> None:
         self._start = time.time()
-    
+
     def delta(self) -> float:
         if not self._end:
             self._end = time.time()
             self._start = self._end
             return 0
 
-
         self._end = time.time()
         self._delta = self._end - self._start
 
         self._start = self._end
         return self._delta
+
 
 class KeyMouse:
     mouse_manager = mouse_controller()
@@ -64,49 +64,48 @@ class KeyMouse:
             on_press=self.on_press,
             on_release=self.on_release,
         )
-        
+
         if self.current_listener:
             self.current_listener.stop()
 
         self.current_listener = listener
         listener.start()
 
-    
-
-
     def start_event_handling(self):
         slow_mouse_speed = 300
         default_mouse_speed = 2100
         fast_mouse_speed = 5400
-        
+
         delta_timer = DeltaTimer()
         delta_timer.start()
 
         slow_scroll_speed = 10
         default_scroll_speed = 60
         fast_scroll_speed = 160
-        
+
         scroll_counter = 0
         while True:
             delta = delta_timer.delta()
-            
-            if self.keys_held.get("Key.alt") and self.keys_held.get(self.activation_key):
+
+            if self.keys_held.get("Key.alt") and self.keys_held.get(
+                self.activation_key
+            ):
                 current_scroll_speed = 0
-        
-                if self.keys_held.get("."): 
+
+                if self.keys_held.get("."):
                     current_scroll_speed = slow_scroll_speed
                 elif self.keys_held.get("-"):
                     current_scroll_speed = fast_scroll_speed
                 else:
                     current_scroll_speed = default_scroll_speed
-                
+
                 scroll_counter += current_scroll_speed * delta
 
-                if self.keys_held.get("w"): 
+                if self.keys_held.get("w"):
                     self.mouse_manager.scroll(0, +scroll_counter)
                 if self.keys_held.get("s"):
                     self.mouse_manager.scroll(0, -scroll_counter)
-                if self.keys_held.get("a"): 
+                if self.keys_held.get("a"):
                     self.mouse_manager.scroll(-scroll_counter, 0)
                 if self.keys_held.get("d"):
                     self.mouse_manager.scroll(+scroll_counter, 0)
@@ -116,13 +115,13 @@ class KeyMouse:
 
             elif self.keys_held.get(self.activation_key):
                 current_mouse_speed = 0
-                if self.keys_held.get("."): 
+                if self.keys_held.get("."):
                     current_mouse_speed = slow_mouse_speed * delta
                 elif self.keys_held.get("-"):
                     current_mouse_speed = fast_mouse_speed * delta
                 else:
                     current_mouse_speed = default_mouse_speed * delta
-                
+
                 if self.keys_held.get("a"):
                     self.mouse_manager.move(-current_mouse_speed, +0)
                 if self.keys_held.get("d"):
@@ -131,21 +130,19 @@ class KeyMouse:
                     self.mouse_manager.move(+0, -current_mouse_speed)
                 if self.keys_held.get("s"):
                     self.mouse_manager.move(+0, +current_mouse_speed)
-                
+
                 if self.keys_pressed.get("Key.space"):
                     self.mouse_manager.press(Button.left)
                 if self.keys_released.get("Key.space"):
                     self.mouse_manager.release(Button.left)
-                
+
                 if self.keys_pressed.get(","):
                     self.mouse_manager.press(Button.right)
                 if self.keys_released.get(","):
                     self.mouse_manager.release(Button.right)
-            
 
             self.keys_pressed = {}
             self.keys_released = {}
-
 
             time.sleep(0.00833333333)
 
@@ -154,14 +151,6 @@ class KeyMouse:
         self.start_event_handling()
 
 
-
-
 if __name__ == "__main__":
     km = KeyMouse()
     km.start()
-    # delta_timer = DeltaTimer()
-    # delta_timer.start()
-    # while(True):
-    #     delta = delta_timer.delta()
-    #     print(delta)
-    #     time.sleep(1)
