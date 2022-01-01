@@ -44,22 +44,27 @@ class KeyMouse:
     def __init__(self) -> None:
         pass
 
+    def parse_key(self, key_event):
+        key = str(key_event).replace("'", "")
+        return key
+
     def on_press(self, key_event):
-        self.keys_held[str(key_event).replace("'", "")] = True
-        self.keys_pressed[str(key_event).replace("'", "")] = True
+        key = self.parse_key(key_event)
+        self.keys_held[key] = True
+        self.keys_pressed[key] = True
         # print(self.keys_pressed)
 
+
     def on_release(self, key_event):
-        self.keys_held[str(key_event).replace("'", "")] = False
-        self.keys_released[str(key_event).replace("'", "")] = True
+        key = self.parse_key(key_event)
+        self.keys_held[key] = False
+        self.keys_released[key] = True
         # print(self.keys_pressed)
 
     def start_key_listener(self):
         self.create_listener()
 
-    def create_listener(self, suppress=True):
-        self.is_activated = suppress
-
+    def create_listener(self):
         listener = keyboard.Listener(
             on_press=self.on_press,
             on_release=self.on_release,
@@ -87,9 +92,9 @@ class KeyMouse:
         while True:
             delta = delta_timer.delta()
 
-            if self.keys_held.get("Key.alt") and self.keys_held.get(
-                self.activation_key
-            ):
+            self.is_activated = self.keys_held.get(self.activation_key, False)
+            
+            if self.keys_held.get("Key.alt") and self.is_activated:
                 current_scroll_speed = 0
 
                 if self.keys_held.get("."):
@@ -113,7 +118,7 @@ class KeyMouse:
                 if scroll_counter > 1:
                     scroll_counter = 0
 
-            elif self.keys_held.get(self.activation_key):
+            elif self.is_activated:
                 current_mouse_speed = 0
                 if self.keys_held.get("."):
                     current_mouse_speed = slow_mouse_speed * delta

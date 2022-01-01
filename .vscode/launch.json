@@ -5,17 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Debug keymouse",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/keymouse.py",
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: Current File",
+            "name": "Debug test file",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "${workspaceFolder}/test.py",
             "console": "integratedTerminal"
         }
     ]
