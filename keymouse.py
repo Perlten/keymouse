@@ -55,7 +55,7 @@ class KeyMouse:
     keys_pressed = {}
     keys_released = {}
 
-    activation_key = "<65493>"
+    activation_key = "<65493>" # F24
 
     def __init__(self, config) -> None:
         self.config = config
