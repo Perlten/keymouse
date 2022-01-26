@@ -55,13 +55,13 @@ class KeyMouse:
     keys_pressed = {}
     keys_released = {}
 
-    activation_key = "Key.menu"
+    activation_key = "<65493>"
 
     def __init__(self, config) -> None:
         self.config = config
 
     def _set_activation_key(self):
-        key_command = f"xmodmap -e 'keycode {self.config['keycode']} = Menu'"
+        key_command = f"xmodmap -e 'keycode {self.config['keycode']} = F24'"
         os.system(key_command)
 
     def parse_key(self, key_event):
@@ -72,13 +72,13 @@ class KeyMouse:
         key = self.parse_key(key_event)
         self.keys_held[key] = True
         self.keys_pressed[key] = True
-        print(self.keys_pressed)
+        # print(self.keys_pressed)
 
     def on_release(self, key_event):
         key = self.parse_key(key_event)
         self.keys_held[key] = False
         self.keys_released[key] = True
-        print(self.keys_pressed)
+        # print(self.keys_pressed)
 
     def start_key_listener(self):
         self.create_listener()
