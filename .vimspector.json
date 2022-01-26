@@ -1,0 +1,20 @@
+{
+  "configurations": {
+    "test": {
+      "adapter": "debugpy",
+      "configuration": {
+        "name": "<name>: Launch",
+        "type": "python",
+        "request": "launch",
+        "cwd": "${workspaceRoot}",
+        "python": "python",
+        "console": "externalTerminal",
+        "debugOptions": [],
+        "program": "${workspaceRoot}/keymouse.py",
+        "env": {
+          "PYTHONPATH": "${workspaceRoot}"
+        }
+      }
+    }
+  }
+}

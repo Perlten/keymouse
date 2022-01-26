@@ -1,9 +1,25 @@
 #!/usr/bin/env python3
 
-from pynput.keyboard import Key, Controller as keyboard_controller
+from pynput.keyboard import Controller as keyboard_controller
 from pynput import keyboard
 from pynput.mouse import Controller as mouse_controller, Button
 import time
+import os
+import json
+
+
+def read_config():
+    config = {
+        "keycode": "135"
+    }
+    try:
+        user_dir = os.path.expanduser("~")
+        with open(f'{user_dir}/.config/keymouse/config') as f:
+            user_config = json.load(f)
+            config.update(user_config)
+    except:
+        pass
+    return config
 
 
 class DeltaTimer:
@@ -41,8 +57,12 @@ class KeyMouse:
 
     activation_key = "Key.menu"
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, config) -> None:
+        self.config = config
+
+    def _set_activation_key(self):
+        key_command = f"xmodmap -e 'keycode {self.config['keycode']} = Menu'"
+        os.system(key_command)
 
     def parse_key(self, key_event):
         key = str(key_event).replace("'", "")
@@ -52,14 +72,13 @@ class KeyMouse:
         key = self.parse_key(key_event)
         self.keys_held[key] = True
         self.keys_pressed[key] = True
-        # print(self.keys_pressed)
-
+        print(self.keys_pressed)
 
     def on_release(self, key_event):
         key = self.parse_key(key_event)
         self.keys_held[key] = False
         self.keys_released[key] = True
-        # print(self.keys_pressed)
+        print(self.keys_pressed)
 
     def start_key_listener(self):
         self.create_listener()
@@ -93,7 +112,7 @@ class KeyMouse:
             delta = delta_timer.delta()
 
             self.is_activated = self.keys_held.get(self.activation_key, False)
-            
+
             if self.keys_held.get("Key.alt") and self.is_activated:
                 current_scroll_speed = 0
 
@@ -157,5 +176,7 @@ class KeyMouse:
 
 
 if __name__ == "__main__":
-    km = KeyMouse()
+    config = read_config()
+    km = KeyMouse(config)
+    km._set_activation_key()
     km.start()
