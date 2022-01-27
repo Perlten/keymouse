@@ -5,23 +5,9 @@ from pynput import keyboard
 from pynput.mouse import Controller as mouse_controller
 import time
 import os
-import json
 from layers.mouse_layer import MouseLayer
-
-
-def read_config():
-    config = {
-        "keycode": "135"
-    }
-    try:
-        user_dir = os.path.expanduser("~")
-        with open(f'{user_dir}/.config/keymouse/config') as f:
-            user_config = json.load(f)
-            config.update(user_config)
-    except:
-        pass
-    return config
-
+from layers.symbol_layer import SymbolLayer
+from utils.config import get_config
 
 class DeltaTimer:
     def __init__(self):
@@ -50,44 +36,51 @@ class KeyMouse:
     keyboard_manager = keyboard_controller()
 
     current_listener = None
-    is_activated = False
 
     keys_held = {}
     keys_pressed = {}
     keys_released = {}
 
-    activation_key = "<65493>"  # F24
+    mouse_activation_key = "<65493>"  # F24
+    symbol_activation_key = "<65492>"  # F23
 
-    def __init__(self, config) -> None:
-        self.config = config
 
     def _set_activation_key(self):
-        key_command = f"xmodmap -e 'keycode {self.config['keycode']} = F24'"
+        key_command = f"xmodmap -e 'keycode 117 = ISO_Level3_Shift'" # backup
         os.system(key_command)
 
-    def parse_key(self, key_event):
+        config = get_config()
+        mouse_keycode = config["mouse"]["keycode"]
+        key_command = f"xmodmap -e 'keycode {mouse_keycode} = F24'"
+        os.system(key_command)
+
+        symbol_keycode = config["symbol"]["keycode"]
+        key_command = f"xmodmap -e 'keycode {symbol_keycode} = F23'"
+        os.system(key_command)
+
+    def _parse_key(self, key_event):
         key = str(key_event).replace("'", "")
         return key
 
-    def on_press(self, key_event):
-        key = self.parse_key(key_event)
+    def _on_press(self, key_event):
+        key = self._parse_key(key_event)
         self.keys_held[key] = True
         self.keys_pressed[key] = True
-        # print(self.keys_pressed)
+        print(self.keys_pressed)
 
-    def on_release(self, key_event):
-        key = self.parse_key(key_event)
+    def _on_release(self, key_event):
+        key = self._parse_key(key_event)
         self.keys_held[key] = False
         self.keys_released[key] = True
-        # print(self.keys_pressed)
+        print(self.keys_pressed)
 
-    def start_key_listener(self):
-        self.create_listener()
+    def _start_key_listener(self):
+        self._create_listener()
 
-    def create_listener(self):
+    def _create_listener(self):
         listener = keyboard.Listener(
-            on_press=self.on_press,
-            on_release=self.on_release,
+            on_press=self._on_press,
+            on_release=self._on_release,
         )
 
         if self.current_listener:
@@ -102,28 +95,34 @@ class KeyMouse:
 
         mouse_layer = MouseLayer(
             self.keys_held, self.keys_pressed, self.keys_released, self.mouse_manager)
+        symbol_layer = SymbolLayer(
+            self.keys_held, self.keys_pressed, self.keys_released, self.keyboard_manager)
+
         while True:
             delta = delta_timer.delta()
 
-            self.is_activated = self.keys_held.get(self.activation_key, False)
-            mouse_layer.manage(self.is_activated, delta)
+            is_mouse_activated = self.keys_held.get(
+                self.mouse_activation_key, False
+            )
 
-            if self.is_activated:
-                if self.keys_pressed.get("j", False):
-                    self.keyboard_manager.press("(")
-                    self.keyboard_manager.release("(")
+            is_symbol_activated = self.keys_held.get(
+                self.symbol_activation_key, False
+            )
 
-            self.keys_pressed = {}
-            self.keys_released = {}
+            mouse_layer.manage(is_mouse_activated, delta)
+            symbol_layer.manage(is_symbol_activated)
+
+            self.keys_pressed.clear()
+            self.keys_released.clear()
 
             time.sleep(0.00833333333)
 
     def start(self):
-        self.start_key_listener()
+        self._set_activation_key()
+        self._start_key_listener()
         self.start_event_handling()
 
+
 if __name__ == "__main__":
-    config = read_config()
-    km = KeyMouse(config)
-    km._set_activation_key()
+    km = KeyMouse()
     km.start()
