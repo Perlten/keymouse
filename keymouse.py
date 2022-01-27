@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from pynput.keyboard import Controller as keyboard_controller
+from pynput.keyboard import Controller as keyboard_controller, Key
 from pynput import keyboard
 from pynput.mouse import Controller as mouse_controller, Button
 import time
@@ -112,7 +112,13 @@ class KeyMouse:
             delta = delta_timer.delta()
 
             self.is_activated = self.keys_held.get(self.activation_key, False)
-
+            
+            if self.is_activated:
+                if self.keys_pressed.get("j", False):
+                    self.keyboard_manager.press("{")
+                    self.keyboard_manager.release("{")
+            
+            # scroll
             if self.keys_held.get("Key.alt") and self.is_activated:
                 current_scroll_speed = 0
 
@@ -136,7 +142,7 @@ class KeyMouse:
 
                 if scroll_counter > 1:
                     scroll_counter = 0
-
+            # Mouse movement
             elif self.is_activated:
                 current_mouse_speed = 0
                 if self.keys_held.get("."):
