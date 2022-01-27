@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-from pynput.keyboard import Controller as keyboard_controller, Key
+from pynput.keyboard import Controller as keyboard_controller
 from pynput import keyboard
-from pynput.mouse import Controller as mouse_controller, Button
+from pynput.mouse import Controller as mouse_controller
 import time
 import os
 import json
+from layers.mouse_layer import MouseLayer
 
 
 def read_config():
@@ -55,7 +56,7 @@ class KeyMouse:
     keys_pressed = {}
     keys_released = {}
 
-    activation_key = "<65493>" # F24
+    activation_key = "<65493>"  # F24
 
     def __init__(self, config) -> None:
         self.config = config
@@ -96,80 +97,21 @@ class KeyMouse:
         listener.start()
 
     def start_event_handling(self):
-        slow_mouse_speed = 300
-        default_mouse_speed = 2100
-        fast_mouse_speed = 5400
-
         delta_timer = DeltaTimer()
         delta_timer.start()
 
-        slow_scroll_speed = 10
-        default_scroll_speed = 60
-        fast_scroll_speed = 160
-
-        scroll_counter = 0
+        mouse_layer = MouseLayer(
+            self.keys_held, self.keys_pressed, self.keys_released, self.mouse_manager)
         while True:
             delta = delta_timer.delta()
 
             self.is_activated = self.keys_held.get(self.activation_key, False)
-            
+            mouse_layer.manage(self.is_activated, delta)
+
             if self.is_activated:
                 if self.keys_pressed.get("j", False):
-                    self.keyboard_manager.press("{")
-                    self.keyboard_manager.release("{")
-            
-            # scroll
-            if self.keys_held.get("Key.alt") and self.is_activated:
-                current_scroll_speed = 0
-
-                if self.keys_held.get("."):
-                    current_scroll_speed = slow_scroll_speed
-                elif self.keys_held.get("-"):
-                    current_scroll_speed = fast_scroll_speed
-                else:
-                    current_scroll_speed = default_scroll_speed
-
-                scroll_counter += current_scroll_speed * delta
-
-                if self.keys_held.get("w"):
-                    self.mouse_manager.scroll(0, +scroll_counter)
-                if self.keys_held.get("s"):
-                    self.mouse_manager.scroll(0, -scroll_counter)
-                if self.keys_held.get("a"):
-                    self.mouse_manager.scroll(-scroll_counter, 0)
-                if self.keys_held.get("d"):
-                    self.mouse_manager.scroll(+scroll_counter, 0)
-
-                if scroll_counter > 1:
-                    scroll_counter = 0
-            # Mouse movement
-            elif self.is_activated:
-                current_mouse_speed = 0
-                if self.keys_held.get("."):
-                    current_mouse_speed = slow_mouse_speed * delta
-                elif self.keys_held.get("-"):
-                    current_mouse_speed = fast_mouse_speed * delta
-                else:
-                    current_mouse_speed = default_mouse_speed * delta
-
-                if self.keys_held.get("a"):
-                    self.mouse_manager.move(-current_mouse_speed, +0)
-                if self.keys_held.get("d"):
-                    self.mouse_manager.move(+current_mouse_speed, +0)
-                if self.keys_held.get("w"):
-                    self.mouse_manager.move(+0, -current_mouse_speed)
-                if self.keys_held.get("s"):
-                    self.mouse_manager.move(+0, +current_mouse_speed)
-
-                if self.keys_pressed.get("Key.space"):
-                    self.mouse_manager.press(Button.left)
-                if self.keys_released.get("Key.space"):
-                    self.mouse_manager.release(Button.left)
-
-                if self.keys_pressed.get(","):
-                    self.mouse_manager.press(Button.right)
-                if self.keys_released.get(","):
-                    self.mouse_manager.release(Button.right)
+                    self.keyboard_manager.press("(")
+                    self.keyboard_manager.release("(")
 
             self.keys_pressed = {}
             self.keys_released = {}
@@ -179,7 +121,6 @@ class KeyMouse:
     def start(self):
         self.start_key_listener()
         self.start_event_handling()
-
 
 if __name__ == "__main__":
     config = read_config()
