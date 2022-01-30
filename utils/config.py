@@ -27,9 +27,12 @@ def get_config():
                 "o": "|",
                 "q": "!",
                 "j": '"',
-                # "Key.space": Key.enter,
-                "Key.space": "h",
-                "w": Key.backspace
+                "c": "[",
+                "v": "]",
+                "x": "_",
+                "n": "@",
+                "<": "\\",
+                "g": "$"
             }
         }
     }
