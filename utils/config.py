@@ -33,7 +33,6 @@ def get_config():
                 "n": "@",
                 "<": "\\",
                 "g": "$",
-                "Key.space": "\xa0",
             }
         }
     }
