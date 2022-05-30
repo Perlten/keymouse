@@ -66,13 +66,13 @@ class KeyMouse:
         key = self._parse_key(key_event)
         self.keys_held[key] = True
         self.keys_pressed[key] = True
-        print(self.keys_pressed)
+        # print(self.keys_pressed)
 
     def _on_release(self, key_event):
         key = self._parse_key(key_event)
         self.keys_held[key] = False
         self.keys_released[key] = True
-        print(self.keys_pressed)
+        # print(self.keys_pressed)
 
     def _start_key_listener(self):
         self._create_listener()
