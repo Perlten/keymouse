@@ -1,6 +1,0 @@
-- Toggle mouse mode
-- use vector math to calculate the distance the mouse needs to move
-
-Completed:
-- Enable right clicking [X]
-- Implement scroll speed adjustment [X]

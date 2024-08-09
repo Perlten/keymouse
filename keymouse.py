@@ -4,10 +4,8 @@ from pynput.keyboard import Controller as keyboard_controller
 from pynput import keyboard
 from pynput.mouse import Controller as mouse_controller
 import time
-import os
 from layers.mouse_layer import MouseLayer
-from layers.symbol_layer import SymbolLayer
-from utils.config import get_config
+
 
 class DeltaTimer:
     def __init__(self):
@@ -41,22 +39,7 @@ class KeyMouse:
     keys_pressed = {}
     keys_released = {}
 
-    mouse_activation_key = "<65493>"  # F24
-    symbol_activation_key = "<65492>"  # F23
-
-
-    def _set_activation_key(self):
-        key_command = f"xmodmap -e 'keycode 117 = ISO_Level3_Shift'" # backup
-        os.system(key_command)
-
-        config = get_config()
-        mouse_keycode = config["mouse"]["keycode"]
-        key_command = f"xmodmap -e 'keycode {mouse_keycode} = F24'"
-        os.system(key_command)
-
-        symbol_keycode = config["symbol"]["keycode"]
-        key_command = f"xmodmap -e 'keycode {symbol_keycode} = F23'"
-        os.system(key_command)
+    mouse_activation_key = "Key.f24"  # F24
 
     def _parse_key(self, key_event):
         key = str(key_event).replace("'", "")
@@ -66,13 +49,11 @@ class KeyMouse:
         key = self._parse_key(key_event)
         self.keys_held[key] = True
         self.keys_pressed[key] = True
-        # print(self.keys_pressed)
 
     def _on_release(self, key_event):
         key = self._parse_key(key_event)
         self.keys_held[key] = False
         self.keys_released[key] = True
-        # print(self.keys_pressed)
 
     def _start_key_listener(self):
         self._create_listener()
@@ -95,8 +76,6 @@ class KeyMouse:
 
         mouse_layer = MouseLayer(
             self.keys_held, self.keys_pressed, self.keys_released, self.mouse_manager)
-        symbol_layer = SymbolLayer(
-            self.keys_held, self.keys_pressed, self.keys_released, self.keyboard_manager)
 
         while True:
             delta = delta_timer.delta()
@@ -105,12 +84,7 @@ class KeyMouse:
                 self.mouse_activation_key, False
             )
 
-            is_symbol_activated = self.keys_held.get(
-                self.symbol_activation_key, False
-            )
-
             mouse_layer.manage(is_mouse_activated, delta)
-            symbol_layer.manage(is_symbol_activated)
 
             self.keys_pressed.clear()
             self.keys_released.clear()
@@ -118,7 +92,6 @@ class KeyMouse:
             time.sleep(0.00833333333)
 
     def start(self):
-        self._set_activation_key()
         self._start_key_listener()
         self.start_event_handling()
 

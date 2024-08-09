@@ -4,13 +4,12 @@ from pynput.mouse import Button
 
 class MouseLayer:
     def __init__(self, keys_held: Dict, keys_pressed: Dict, keys_released: Dict, mouse_manager) -> None:
-        self.slow_mouse_speed = 300
-        self.default_mouse_speed = 2100
-        self.fast_mouse_speed = 5400
-        self.slow_scroll_speed = 10
-        self.default_scroll_speed = 60
-        self.fast_scroll_speed = 160
-        self.scroll_counter = 0
+        self.slow_mouse_speed = 500
+        self.default_mouse_speed = 1800
+        self.fast_mouse_speed = 4000
+        self.slow_scroll_speed = .1
+        self.default_scroll_speed = .5
+        self.fast_scroll_speed = 1
 
         self.keys_held = keys_held
         self.keys_pressed = keys_pressed
@@ -19,54 +18,50 @@ class MouseLayer:
 
     def manage(self, is_activated: bool, delta: float):
         # Scroll movement
-        if self.keys_held.get("Key.alt") and is_activated:
+        if self.keys_held.get("Key.alt_l") and is_activated:
             current_scroll_speed = 0
 
-            if self.keys_held.get("."):
+            if self.keys_held.get("Key.f19"):
                 current_scroll_speed = self.slow_scroll_speed
-            elif self.keys_held.get("-"):
+            elif self.keys_held.get("Key.shift"):
                 current_scroll_speed = self.fast_scroll_speed
             else:
                 current_scroll_speed = self.default_scroll_speed
 
-            self.scroll_counter += current_scroll_speed * delta
+            if self.keys_held.get("Key.f23"):
+                self.mouse_manager.scroll(0, +current_scroll_speed)
+            if self.keys_held.get("Key.f21"):
+                self.mouse_manager.scroll(0, -current_scroll_speed)
+            if self.keys_held.get("Key.f22"):
+                self.mouse_manager.scroll(-current_scroll_speed, 0)
+            if self.keys_held.get("Key.f20"):
+                self.mouse_manager.scroll(+current_scroll_speed, 0)
 
-            if self.keys_held.get("w"):
-                self.mouse_manager.scroll(0, +self.scroll_counter)
-            if self.keys_held.get("s"):
-                self.mouse_manager.scroll(0, -self.scroll_counter)
-            if self.keys_held.get("a"):
-                self.mouse_manager.scroll(-self.scroll_counter, 0)
-            if self.keys_held.get("d"):
-                self.mouse_manager.scroll(+self.scroll_counter, 0)
-
-            if self.scroll_counter > 1:
-                self.scroll_counter = 0
         # Mouse movement
         elif is_activated:
             current_mouse_speed = 0
-            if self.keys_held.get("."):
+            if self.keys_held.get("Key.f19"):
                 current_mouse_speed = self.slow_mouse_speed * delta
-            elif self.keys_held.get("-"):
+            elif self.keys_held.get("Key.shift"):
                 current_mouse_speed = self.fast_mouse_speed * delta
             else:
                 current_mouse_speed = self.default_mouse_speed * delta
 
-            if self.keys_held.get("a"):
+            if self.keys_held.get("Key.f22"):
                 self.mouse_manager.move(-current_mouse_speed, +0)
-            if self.keys_held.get("d"):
+            if self.keys_held.get("Key.f20"):
                 self.mouse_manager.move(+current_mouse_speed, +0)
-            if self.keys_held.get("w"):
+            if self.keys_held.get("Key.f23"):
                 self.mouse_manager.move(+0, -current_mouse_speed)
-            if self.keys_held.get("s"):
+            if self.keys_held.get("Key.f21"):
                 self.mouse_manager.move(+0, +current_mouse_speed)
 
-            if self.keys_pressed.get("Key.space"):
+            if self.keys_pressed.get("Key.f17"):
                 self.mouse_manager.press(Button.left)
-            if self.keys_released.get("Key.space"):
+            if self.keys_released.get("Key.f17"):
                 self.mouse_manager.release(Button.left)
 
-            if self.keys_pressed.get(","):
+            if self.keys_pressed.get("Key.f18"):
                 self.mouse_manager.press(Button.right)
-            if self.keys_released.get(","):
+            if self.keys_released.get("Key.f18"):
                 self.mouse_manager.release(Button.right)
