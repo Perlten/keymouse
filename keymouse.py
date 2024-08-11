@@ -7,6 +7,8 @@ import time
 from layers.mouse_layer import MouseLayer
 
 
+suppress_key = False
+
 class DeltaTimer:
     def __init__(self):
         self._start = time.time()
@@ -58,10 +60,17 @@ class KeyMouse:
     def _start_key_listener(self):
         self._create_listener()
 
+    def darwin_intercept(event_type, event):
+        global suppress_key
+        if suppress_key:
+            return False
+        return event
+
     def _create_listener(self):
         listener = keyboard.Listener(
             on_press=self._on_press,
             on_release=self._on_release,
+            darwin_intercept=True
         )
 
         if self.current_listener:
@@ -71,6 +80,7 @@ class KeyMouse:
         listener.start()
 
     def start_event_handling(self):
+        global suppress_key
         delta_timer = DeltaTimer()
         delta_timer.start()
 
@@ -84,7 +94,7 @@ class KeyMouse:
                 self.mouse_activation_key, False
             )
 
-            mouse_layer.manage(is_mouse_activated, delta)
+            suppress_key = mouse_layer.manage(is_mouse_activated, delta)
 
             self.keys_pressed.clear()
             self.keys_released.clear()

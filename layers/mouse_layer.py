@@ -16,7 +16,7 @@ class MouseLayer:
         self.keys_released = keys_released
         self.mouse_manager = mouse_manager
 
-    def manage(self, is_activated: bool, delta: float):
+    def manage(self, is_activated: bool, delta: float) -> bool:
         # Scroll movement
         if self.keys_held.get("Key.alt_l") and is_activated:
             current_scroll_speed = 0
@@ -36,6 +36,7 @@ class MouseLayer:
                 self.mouse_manager.scroll(-current_scroll_speed, 0)
             if self.keys_held.get("Key.f17"):
                 self.mouse_manager.scroll(+current_scroll_speed, 0)
+            return True
 
         # Mouse movement
         elif is_activated:
@@ -65,3 +66,5 @@ class MouseLayer:
                 self.mouse_manager.press(Button.right)
             if self.keys_released.get("Key.f19"):
                 self.mouse_manager.release(Button.right)
+            return True
+        return False
