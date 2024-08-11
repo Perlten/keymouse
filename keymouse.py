@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from pynput.keyboard import Controller as keyboard_controller
 from pynput import keyboard
@@ -6,8 +6,7 @@ from pynput.mouse import Controller as mouse_controller
 import time
 from layers.mouse_layer import MouseLayer
 
-
-suppress_key = False
+is_mouse_activated = False
 
 class DeltaTimer:
     def __init__(self):
@@ -48,29 +47,41 @@ class KeyMouse:
         return key
 
     def _on_press(self, key_event):
+        global is_mouse_activated
         key = self._parse_key(key_event)
         self.keys_held[key] = True
         self.keys_pressed[key] = True
+        is_mouse_activated = self.keys_held.get(
+                self.mouse_activation_key, False
+            )
 
     def _on_release(self, key_event):
+        global is_mouse_activated
         key = self._parse_key(key_event)
         self.keys_held[key] = False
         self.keys_released[key] = True
+        is_mouse_activated = self.keys_held.get(
+                self.mouse_activation_key, False
+            )
 
     def _start_key_listener(self):
         self._create_listener()
+    
+    def debug_keys_held(self):
+        res = [x for x in self.keys_held.keys() if self.keys_held.get(x, False)]
+        print(res)
 
     def darwin_intercept(event_type, event):
-        global suppress_key
-        if suppress_key:
-            return False
+        if is_mouse_activated:
+            return None
+     
         return event
 
     def _create_listener(self):
         listener = keyboard.Listener(
             on_press=self._on_press,
             on_release=self._on_release,
-            darwin_intercept=True
+            darwin_intercept=KeyMouse.darwin_intercept
         )
 
         if self.current_listener:
@@ -80,7 +91,7 @@ class KeyMouse:
         listener.start()
 
     def start_event_handling(self):
-        global suppress_key
+        global is_mouse_activated
         delta_timer = DeltaTimer()
         delta_timer.start()
 
@@ -90,10 +101,8 @@ class KeyMouse:
         while True:
             delta = delta_timer.delta()
 
-            is_mouse_activated = self.keys_held.get(
-                self.mouse_activation_key, False
-            )
-
+           
+            #self.debug_keys_held()
             suppress_key = mouse_layer.manage(is_mouse_activated, delta)
 
             self.keys_pressed.clear()
