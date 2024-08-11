@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 from pynput.keyboard import Controller as keyboard_controller
 from pynput import keyboard
@@ -39,7 +39,7 @@ class KeyMouse:
     keys_pressed = {}
     keys_released = {}
 
-    mouse_activation_key = "Key.f24"  # F24
+    mouse_activation_key = "Key.f13"  
 
     def _parse_key(self, key_event):
         key = str(key_event).replace("'", "")
