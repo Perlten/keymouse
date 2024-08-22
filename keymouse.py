@@ -40,10 +40,10 @@ class KeyMouse:
     keys_pressed = {}
     keys_released = {}
 
-    mouse_activation_key = "Key.f13"  
+    mouse_activation_key = "key.f13"  
 
     def _parse_key(self, key_event):
-        key = str(key_event).replace("'", "")
+        key = str(key_event).replace("'", "").lower()
         return key
 
     def _on_press(self, key_event):
@@ -102,7 +102,7 @@ class KeyMouse:
             delta = delta_timer.delta()
 
            
-            #self.debug_keys_held()
+            self.debug_keys_held()
             suppress_key = mouse_layer.manage(is_mouse_activated, delta)
 
             self.keys_pressed.clear()

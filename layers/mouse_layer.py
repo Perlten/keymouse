@@ -1,5 +1,6 @@
 from typing import Dict
 from pynput.mouse import Button
+import time
 
 
 class MouseLayer:
@@ -23,7 +24,7 @@ class MouseLayer:
 
             if self.keys_held.get("j"):
                 current_scroll_speed = self.slow_scroll_speed
-            elif self.keys_held.get("Key.shift"):
+            elif self.keys_held.get("key.shift"):
                 current_scroll_speed = self.fast_scroll_speed
             else:
                 current_scroll_speed = self.default_scroll_speed
@@ -43,23 +44,27 @@ class MouseLayer:
             current_mouse_speed = 0
             if self.keys_held.get("j"):
                 current_mouse_speed = self.slow_mouse_speed * delta
-            elif self.keys_held.get("Key.shift"):
+            elif self.keys_held.get("key.shift"):
                 current_mouse_speed = self.fast_mouse_speed * delta
             else:
                 current_mouse_speed = self.default_mouse_speed * delta
 
             if self.keys_held.get("a"):
                 self.mouse_manager.move(-current_mouse_speed, +0)
+                time.sleep(0.0001)
             if self.keys_held.get("d"):
                 self.mouse_manager.move(+current_mouse_speed, +0)
+                time.sleep(0.0001)
             if self.keys_held.get("w"):
                 self.mouse_manager.move(+0, -current_mouse_speed)
+                time.sleep(0.0001)
             if self.keys_held.get("s"):
                 self.mouse_manager.move(+0, +current_mouse_speed)
+                time.sleep(0.0001)
 
-            if self.keys_pressed.get("Key.space"):
+            if self.keys_pressed.get("key.space"):
                 self.mouse_manager.press(Button.left)
-            if self.keys_released.get("Key.space"):
+            if self.keys_released.get("key.space"):
                 self.mouse_manager.release(Button.left)
 
             if self.keys_pressed.get("k"):
