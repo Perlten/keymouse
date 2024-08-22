@@ -102,7 +102,7 @@ class KeyMouse:
             delta = delta_timer.delta()
 
            
-            self.debug_keys_held()
+            # self.debug_keys_held()
             suppress_key = mouse_layer.manage(is_mouse_activated, delta)
 
             self.keys_pressed.clear()
