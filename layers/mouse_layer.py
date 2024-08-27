@@ -34,9 +34,9 @@ class MouseLayer:
             if self.keys_held.get("s"):
                 self.mouse_manager.scroll(0, -current_scroll_speed)
             if self.keys_held.get("a"):
-                self.mouse_manager.scroll(-current_scroll_speed, 0)
-            if self.keys_held.get("d"):
                 self.mouse_manager.scroll(+current_scroll_speed, 0)
+            if self.keys_held.get("d"):
+                self.mouse_manager.scroll(-current_scroll_speed, 0)
             return True
 
         # Mouse movement
